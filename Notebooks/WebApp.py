@@ -4,6 +4,15 @@ import pandas as pd
 import numpy as np
 import pickle
 
+#location data
+from geopy.geocoders import Nominatim
+geocoder = Nominatim(user_agent = 'your_app_name')
+from geopy.extra.rate_limiter import RateLimiter
+geocode = RateLimiter(geocoder.geocode, min_delay_seconds = 1,   return_value_on_exception = None) 
+# adding 1 second padding between calls
+import requests
+import urllib.parse
+
 # img load
 from PIL import Image
 
@@ -21,6 +30,9 @@ model = load_model('../Models/vgg_cnn.h5')
 import cv2
 import imutils
 
+import sklearn.preprocessing as preprocessing
+
+
 inputs = (150, 150, 3)
 vgg = vgg16.VGG16(include_top=False, weights='imagenet', 
                                      input_shape=inputs)
@@ -34,14 +46,103 @@ vgg_model.trainable = False
 for layer in vgg_model.layers:
     layer.trainable = False
 
+import pydeck as pdk
 
-def classify(image, vgg_model, model):
-    cats = ['art', 'beaches/ocean', 'entertainment', 'gardens/zoo', 'landmarks', 'museums',
-       'parks', 'sports']
+def show_map_locations(addresses, names):
+    user_loc = [50.11,-122.11]
+    # after initiating geocoder
+    locations = []
+    lats = []
+    longs = []
+    name_list = []
 
-    img_std = image/255
+    for idx, add in enumerate(addresses):
+        try:
+            loc = geocode(add)
+            lats.append(float(loc.latitude))
+            longs.append(float(loc.longitude))
+            name_list.append(names[idx])
+            locations.append(add)
+        except:
+            try: 
+                url = 'https://nominatim.openstreetmap.org/search/' + urllib.parse.quote(add) +'?format=json'
 
-    img_vgg = get_bottleneck_features(vgg_model, img_std)
+                response = requests.get(url).json()
+                lats.append(float(response[0]["lat"]))
+                longs.append(float(response[0]["lon"]))
+                name_list.append(names[idx])
+                locations.append(add)
+            except:
+                  st.write(add + " not found")
+
+    
+    data = pd.DataFrame({
+    'Attraction' : name_list,
+    'Address': locations,
+    'lat' : lats,
+    'lon' : longs
+    })
+    st.table(data[['Attraction','Address']])
+    # Adding code so we can have map default to the center of the data
+    midpoint = (np.average(data['lat']), np.average(data['lon']))
+
+    # st.map(data, use_container_width=True)
+
+    df = pd.DataFrame( {'lat': [midpoint[0]], 
+                        'lon': [midpoint[1]]})
+    
+
+    st.pydeck_chart(pdk.Deck(
+    map_style='mapbox://styles/mapbox/light-v9',
+    initial_view_state=pdk.ViewState(
+    latitude=midpoint[0],
+    longitude=midpoint[1],
+    zoom=3.5
+    
+    ),
+    layers=[
+    pdk.Layer(
+    'HexagonLayer',
+    data=data,
+    get_position='[lon, lat]',
+    elevation_scale=50,
+    elevation_range=[0, 1000],
+    pickable=True,
+    extruded=True,
+    ),
+    pdk.Layer(
+    'ScatterplotLayer',
+    data=data,
+    opacity=0.9,
+    stroked=True,
+    filled=True,
+    radius_scale=10,
+    radius_min_pixels=10,
+    radius_max_pixels=60,
+    line_width_min_pixels=3,
+    get_position='[lon, lat]',
+    get_color='[200, 30, 0, 160]',
+    zoom=3,
+    ), pdk.Layer(
+    'ScatterplotLayer',
+    data=df,
+    opacity=0.9,
+    stroked=True,
+    filled=True,
+    radius_scale=10,
+    radius_min_pixels=10,
+    radius_max_pixels=60,
+    line_width_min_pixels=3,
+    get_position='[lon, lat]',
+    get_color='[120,140]',
+    zoom=3,
+    ),
+    ],
+    ))
+
+def classify(img_vgg, model):
+    cats = ['beaches/ocean', 'entertainment', 'gardens/zoo', 'landmarks', 'museums',
+       'parks']
     
     predictions = np.array(model.predict(img_vgg))
     pred = np.argmax(predictions)
@@ -96,46 +197,46 @@ def get_color_description(img_array, bins, color):
         features.extend(hist)
     return features
 
-def get_sorted_distances_list(df, feat):
-    distances = {}
-    for index, row in df.iterrows():
-        pt = np.array(row[5])
-        # print(pt)
-        dist = np.linalg.norm(feat-pt)
-        distances[index] = dist
+# def get_sorted_distances_list(df, feat):
+#     distances = {}
+#     for index, row in df.iterrows():
+#         pt = np.array(row[5])
+#         # print(pt)
+#         dist = np.linalg.norm(feat-pt)
+#         distances[index] = dist
 
-    # distances
-    sorted_dist = dict(sorted(distances.items(), key=lambda item: item[1], reverse=False))
+#     # distances
+#     sorted_dist = dict(sorted(distances.items(), key=lambda item: item[1], reverse=False))
     
-    return sorted_dist
+#     return sorted_dist
 
-def find_closest_imgs(img_class, img, img_df):
+# def find_closest_imgs(img_class, img, img_df):
 
-    bins = [8,8,8]
-    color = cv2.COLOR_BGR2HSV
-    feats = get_color_description(img, bins, color)
-    feats = np.array(feats)
+#     bins = [8,8,8]
+#     color = cv2.COLOR_BGR2HSV
+#     feats = get_color_description(img, bins, color)
+#     feats = np.array(feats)
 
-    sorted_dist = get_sorted_distances_list(img_df, feats)
+#     sorted_dist = get_sorted_distances_list(img_df, feats)
 
-    attractions = []
-    urls = []
-    locations = []
-    x = 1
-    while x < 3:
-        for key, value in sorted_dist.items():
-            if img_df.loc[key,'name'] not in attractions:
-                attractions.append(img_df.loc[key,'name'])
-                urls.append(img_df.loc[key,'url'])
-                locations.append(img_df.loc[key,'location'])
-                x = x+1
+#     attractions = []
+#     urls = []
+#     locations = []
+#     x = 1
+#     while x < 3:
+#         for key, value in sorted_dist.items():
+#             if img_df.loc[key,'name'] not in attractions:
+#                 attractions.append(img_df.loc[key,'name'])
+#                 urls.append(img_df.loc[key,'url'])
+#                 locations.append(img_df.loc[key,'location'])
+#                 x = x+1
     
-    df = pd.DataFrame()
-    df['name'] = attractions
-    df['url'] = urls
-    df['location'] = locations
+#     df = pd.DataFrame()
+#     df['name'] = attractions
+#     df['url'] = urls
+#     df['location'] = locations
 
-    return df[:3]
+#     return df[:3]
 
 def get_bottleneck_features(model, input_img):
     input_imgs = np.array([input_img])
@@ -143,44 +244,86 @@ def get_bottleneck_features(model, input_img):
     features = model.predict(input_imgs, verbose=0)
     return features
 
+def get_distance(img_feats, feats):
+    img_feats_arr = np.array(img_feats)
+    pt = np.array(feats)
+    return np.linalg.norm(img_feats_arr-pt)
 
-
-def get_recommendations(img_class, img_array):
+def get_recommendations(img_class, img_array, img_vgg):
     #load df with color descriptions
     file_name = img_class.replace('/', '_')
-    st.write(file_name)
     path = '/Users/racheldilley/Documents/lets-take-a-trip-data/AppData/' + file_name + '_df.pkl'
     df = pickle.load(open(path, 'rb'))
-    df = df[:1000]
-    # df = pd.read_pickle(path)
-    st.write(df.head())
+    # df = df[:1000]
 
-    top_df = find_closest_imgs(img_class, img_array, df)
+    bins = [8,8,8]
+    color = cv2.COLOR_BGR2HSV
+    img_color_des = get_color_description(img_array, bins, color)
+    df['color_feats'] = df.apply(lambda row: get_distance(img_color_des, row[5]), axis=1)
+    df['vgg_feats'] = df.apply(lambda row: get_distance(img_vgg, row[6]), axis=1)
+
+    min_max_scaler = preprocessing.MinMaxScaler()
+    color_array = df['color_feats'].values.astype(float).reshape(-1,1)
+    scaled_color_array = min_max_scaler.fit_transform(color_array)
+
+    vgg_array = df['vgg_feats'].values.astype(float).reshape(-1,1)
+    scaled_vgg_array = min_max_scaler.fit_transform(vgg_array)
+
+    df.drop(['color_feats','vgg_feats'], axis=1, inplace=True)
+
+    total_distance =  3*scaled_vgg_array + scaled_color_array
+    df['distance'] = total_distance
+
+    grouped_df = df.groupby(['name', 'location'])['distance'].mean()
+    grouped_df = pd.DataFrame(grouped_df).reset_index()
+
+    # remove attractins with wrong locations
+    grouped_df['length'] = grouped_df.location.str.len()
+    grouped_df = grouped_df[grouped_df.length > 3]
+
+    grouped_df.sort_values(by=['distance'], ascending=True, inplace=True)
+
+    top_df = grouped_df[:3].reset_index()
+    atts = [top_df.loc[0,'name'], top_df.loc[1,'name'], top_df.loc[2,'name']]
+
+    grouped = df.groupby('name')
+    groups = []
+    for attraction in atts:
+        groups.append(grouped.get_group(attraction))
+    show_recommendations(groups)
+
     return top_df
 
-def show_recommendations(df):
-    for index, row in df.iterrows():
-        img = load_image_streamlit(row[1])
-        st.image(img, width=300)
 
+def show_map(df):
+    # imgs = [ df.loc[0,'url'], df.loc[1,'url'], df.loc[2,'url']]
+    names = [df.loc[0,'name'], df.loc[1,'name'], df.loc[2,'name']]
+    locations = [df.loc[0,'location'], df.loc[1,'location'], df.loc[2,'location']]
+    # st.image(imgs, width = 200, caption = names)
+    show_map_locations(locations, names)
 
+def show_recommendations(groups):
+    st.write('')
 
-st.title('US Tourist Attraction Recommende')
-#st.image()
+st.title('US Tourist Attraction Recommender')
+
 uploaded_file = st.file_uploader("Choose an image...", type="jpg")
 if uploaded_file is not None:
     image = Image.open(uploaded_file)
     img = image.resize((150, 150)) 
     img_array = np.array(img)
+    img_std = img_array/255
+    img_vgg = get_bottleneck_features(vgg_model, img_std)
 
     st.image(image, caption='Uploaded Image.', use_column_width=True)
     st.write("")
     st.write("Recommending...")
 
-    label = classify(img_array, vgg_model, model)
-    st.write(label)
-    df = get_recommendations(label, img_array)
-    show_recommendations(df)
+    label = classify(img_vgg, model)
+    st.write('A ' + label + ' attraction')
+
+    df = get_recommendations(label, img_array, img_vgg)
+    show_map(df)
     # closest_imgs = find_closest_imgs(label, img_array)
     # st.write(closest_imgs)
 
