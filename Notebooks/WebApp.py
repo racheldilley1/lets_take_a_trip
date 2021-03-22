@@ -48,6 +48,18 @@ for layer in vgg_model.layers:
 
 import pydeck as pdk
 
+def check_if_in_us(lat,long):
+    top = 49.3457868 # north lat
+    left = -124.7844079 # west long
+    right = -66.9513812 # east long
+    bottom =  24.7433195 # south lat
+    if lat > top or lat < bottom:
+        return False
+    elif long > right or long < left:
+        return False
+    else:
+        return True
+
 def show_map_locations(addresses, names):
     user_loc = [50.11,-122.11]
     # after initiating geocoder
@@ -56,11 +68,21 @@ def show_map_locations(addresses, names):
     longs = []
     name_list = []
 
+    display_data = pd.DataFrame({
+    'Attraction' : names,
+    'Address': addresses,
+    })
+    st.table(display_data)
+
     for idx, add in enumerate(addresses):
         try:
             loc = geocode(add)
-            lats.append(float(loc.latitude))
-            longs.append(float(loc.longitude))
+            lat = float(loc.latitude)
+            long = float(loc.longitude)
+            if check_if_in_us(lat,long) == False:
+                raise ValueError()
+            lats.append(lat)
+            longs.append(long)
             name_list.append(names[idx])
             locations.append(add)
         except:
@@ -68,12 +90,16 @@ def show_map_locations(addresses, names):
                 url = 'https://nominatim.openstreetmap.org/search/' + urllib.parse.quote(add) +'?format=json'
 
                 response = requests.get(url).json()
-                lats.append(float(response[0]["lat"]))
-                longs.append(float(response[0]["lon"]))
+                lat = float(response[0]["lat"])
+                long = float(response[0]["lon"])
+                if check_if_in_us(lat,long) == False:
+                    raise ValueError()
+                lats.append(lat)
+                longs.append(long)
                 name_list.append(names[idx])
                 locations.append(add)
             except:
-                  st.write(add + " not found")
+                  st.write('Coudnt find geolocation for ' + add)
 
     
     data = pd.DataFrame({
@@ -82,7 +108,7 @@ def show_map_locations(addresses, names):
     'lat' : lats,
     'lon' : longs
     })
-    st.table(data[['Attraction','Address']])
+    
     # Adding code so we can have map default to the center of the data
     midpoint = (np.average(data['lat']), np.average(data['lon']))
 
@@ -197,47 +223,6 @@ def get_color_description(img_array, bins, color):
         features.extend(hist)
     return features
 
-# def get_sorted_distances_list(df, feat):
-#     distances = {}
-#     for index, row in df.iterrows():
-#         pt = np.array(row[5])
-#         # print(pt)
-#         dist = np.linalg.norm(feat-pt)
-#         distances[index] = dist
-
-#     # distances
-#     sorted_dist = dict(sorted(distances.items(), key=lambda item: item[1], reverse=False))
-    
-#     return sorted_dist
-
-# def find_closest_imgs(img_class, img, img_df):
-
-#     bins = [8,8,8]
-#     color = cv2.COLOR_BGR2HSV
-#     feats = get_color_description(img, bins, color)
-#     feats = np.array(feats)
-
-#     sorted_dist = get_sorted_distances_list(img_df, feats)
-
-#     attractions = []
-#     urls = []
-#     locations = []
-#     x = 1
-#     while x < 3:
-#         for key, value in sorted_dist.items():
-#             if img_df.loc[key,'name'] not in attractions:
-#                 attractions.append(img_df.loc[key,'name'])
-#                 urls.append(img_df.loc[key,'url'])
-#                 locations.append(img_df.loc[key,'location'])
-#                 x = x+1
-    
-#     df = pd.DataFrame()
-#     df['name'] = attractions
-#     df['url'] = urls
-#     df['location'] = locations
-
-#     return df[:3]
-
 def get_bottleneck_features(model, input_img):
     input_imgs = np.array([input_img])
     
@@ -290,20 +275,24 @@ def get_recommendations(img_class, img_array, img_vgg):
     groups = []
     for attraction in atts:
         groups.append(grouped.get_group(attraction))
-    show_recommendations(groups)
+    show_recommendations(groups, atts)
 
     return top_df
 
 
 def show_map(df):
-    # imgs = [ df.loc[0,'url'], df.loc[1,'url'], df.loc[2,'url']]
+
     names = [df.loc[0,'name'], df.loc[1,'name'], df.loc[2,'name']]
     locations = [df.loc[0,'location'], df.loc[1,'location'], df.loc[2,'location']]
-    # st.image(imgs, width = 200, caption = names)
+
     show_map_locations(locations, names)
 
-def show_recommendations(groups):
-    st.write('')
+def show_recommendations(groups, atts):
+    for idx, group in enumerate(groups):
+        df = pd.DataFrame(group).reset_index()
+        st.write(atts[idx])
+        imgs = [df.loc[0,'url'], df.loc[2,'url'], df.loc[4,'url']]
+        st.image(imgs, width = 200)
 
 st.title('US Tourist Attraction Recommender')
 
