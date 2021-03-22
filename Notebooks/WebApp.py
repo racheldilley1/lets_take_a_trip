@@ -46,6 +46,7 @@ vgg_model.trainable = False
 for layer in vgg_model.layers:
     layer.trainable = False
 
+# show map
 import pydeck as pdk
 
 def check_if_in_us(lat,long):
@@ -60,111 +61,144 @@ def check_if_in_us(lat,long):
     else:
         return True
 
-def show_map_locations(addresses, names):
-    user_loc = [50.11,-122.11]
+def get_lat_long_from_zip(zip):
+    try:
+        loc = geocode(query={'postalcode':zip}, addressdetails=True)
+        lat = float(loc.latitude)
+        long = float(loc.longitude)
+        if check_if_in_us(lat,long) == False:
+            return []
+        else:
+            return [loc, lat, long]
+    except:
+        return []
+
+def find_lat_long(add):
+    try:
+        loc = geocode(add)
+        lat = float(loc.latitude)
+        long = float(loc.longitude)
+        if check_if_in_us(lat,long) == False:
+            return (None, None)
+    except:
+        try: 
+            url = 'https://nominatim.openstreetmap.org/search/' + urllib.parse.quote(add) +'?format=json'
+
+            response = requests.get(url).json()
+            lat = float(response[0]["lat"])
+            long = float(response[0]["lon"])
+            if check_if_in_us(lat,long) == False:
+                return (None, None)
+        except:
+            zip_try1 = add[-5]
+            locs_try1 = get_lat_long_from_zip(zip)
+            zip_try2 = add[-9:-6]
+            locs_try2 = get_lat_long_from_zip(zip)
+            if locs_try1 != []:
+                lat = float(locs_try1[1])
+                long = float(locs_try1[2])
+            elif locs_try2 != []:
+                lat = float(locs_try2[1])
+                long = float(locs_try2[2])
+            else:
+                return (None, None)
+    return (lat, long)
+
+def show_map_locations(addresses, names, latitude, longitude):
+    latitude = float(latitude)
+    longitude = float(longitude)
+
     # after initiating geocoder
     locations = []
     lats = []
     longs = []
     name_list = []
 
-    display_data = pd.DataFrame({
-    'Attraction' : names,
-    'Address': addresses,
-    })
-    st.table(display_data)
-
     for idx, add in enumerate(addresses):
-        try:
-            loc = geocode(add)
-            lat = float(loc.latitude)
-            long = float(loc.longitude)
-            if check_if_in_us(lat,long) == False:
-                raise ValueError()
+        
+        lat, long = find_lat_long(add)
+        if lat != None or long != None:
             lats.append(lat)
             longs.append(long)
             name_list.append(names[idx])
             locations.append(add)
-        except:
-            try: 
-                url = 'https://nominatim.openstreetmap.org/search/' + urllib.parse.quote(add) +'?format=json'
-
-                response = requests.get(url).json()
-                lat = float(response[0]["lat"])
-                long = float(response[0]["lon"])
-                if check_if_in_us(lat,long) == False:
-                    raise ValueError()
-                lats.append(lat)
-                longs.append(long)
-                name_list.append(names[idx])
-                locations.append(add)
-            except:
-                  st.write('Coudnt find geolocation for ' + add)
+        else:
+            st.write('Coudnt find geolocation for ' + names[idx])
 
     
     data = pd.DataFrame({
-    'Attraction' : name_list,
+    'Recommened Attraction' : name_list,
     'Address': locations,
     'lat' : lats,
     'lon' : longs
     })
+
+    st.write(data)
     
     # Adding code so we can have map default to the center of the data
-    midpoint = (np.average(data['lat']), np.average(data['lon']))
+    longs = longs + [longitude]
+    longs = np.array(longs)
+    lats = lats + [latitude]
+    lats = np.array(lats)
+    midpoint = (np.average(longs), np.average(lats))
 
-    # st.map(data, use_container_width=True)
+    st.write(midpoint)
 
-    df = pd.DataFrame( {'lat': [midpoint[0]], 
-                        'lon': [midpoint[1]]})
+
+    # df = pd.DataFrame( {'lat': [latitude], 
+    #                     'lon': [longitude]})
+    df = pd.DataFrame( {'lat': [midpoint[0]], 'lon': [midpoint[1]]})
+      
+    
+    st.write(df)
     
 
     st.pydeck_chart(pdk.Deck(
-    map_style='mapbox://styles/mapbox/light-v9',
-    initial_view_state=pdk.ViewState(
-    latitude=midpoint[0],
-    longitude=midpoint[1],
-    zoom=3.5
-    
-    ),
-    layers=[
-    pdk.Layer(
-    'HexagonLayer',
-    data=data,
-    get_position='[lon, lat]',
-    elevation_scale=50,
-    elevation_range=[0, 1000],
-    pickable=True,
-    extruded=True,
-    ),
-    pdk.Layer(
-    'ScatterplotLayer',
-    data=data,
-    opacity=0.9,
-    stroked=True,
-    filled=True,
-    radius_scale=10,
-    radius_min_pixels=10,
-    radius_max_pixels=60,
-    line_width_min_pixels=3,
-    get_position='[lon, lat]',
-    get_color='[200, 30, 0, 160]',
-    zoom=3,
-    ), pdk.Layer(
-    'ScatterplotLayer',
-    data=df,
-    opacity=0.9,
-    stroked=True,
-    filled=True,
-    radius_scale=10,
-    radius_min_pixels=10,
-    radius_max_pixels=60,
-    line_width_min_pixels=3,
-    get_position='[lon, lat]',
-    get_color='[120,140]',
-    zoom=3,
-    ),
-    ],
-    ))
+                    map_style='mapbox://styles/mapbox/light-v9',
+                    initial_view_state=pdk.ViewState(
+                    latitude= midpoint[0],
+                    longitude= midpoint[1],
+                    zoom=2
+                    ),
+                    layers=[
+                        pdk.Layer(
+                        'HexagonLayer',
+                        data=data,
+                        get_position='[lon, lat]',
+                        elevation_scale=50,
+                        elevation_range=[0, 1000],
+                        pickable=True,
+                        extruded=True,
+                        ),
+                    pdk.Layer(
+                    'ScatterplotLayer',
+                    data=data,
+                    opacity=0.9,
+                    stroked=True,
+                    filled=True,
+                    radius_scale=10,
+                    radius_min_pixels=10,
+                    radius_max_pixels=60,
+                    line_width_min_pixels=3,
+                    get_position='[lon, lat]',
+                    get_color='[200, 30, 0, 160]',
+                    # zoom=3,
+                    ), pdk.Layer(
+                    'ScatterplotLayer',
+                    data=df,
+                    opacity=0.9,
+                    stroked=True,
+                    filled=True,
+                    radius_scale=10,
+                    radius_min_pixels=10,
+                    radius_max_pixels=60,
+                    line_width_min_pixels=3,
+                    get_position='[lon, lat]',
+                    get_color='[120,140]',
+                    # zoom=3,
+                    ),
+                ],
+                ))
 
 def classify(img_vgg, model):
     cats = ['beaches/ocean', 'entertainment', 'gardens/zoo', 'landmarks', 'museums',
@@ -239,13 +273,15 @@ def get_recommendations(img_class, img_array, img_vgg):
     file_name = img_class.replace('/', '_')
     path = '/Users/racheldilley/Documents/lets-take-a-trip-data/AppData/' + file_name + '_df.pkl'
     df = pickle.load(open(path, 'rb'))
-    # df = df[:1000]
+    st.write(df.head())
 
     bins = [8,8,8]
     color = cv2.COLOR_BGR2HSV
     img_color_des = get_color_description(img_array, bins, color)
     df['color_feats'] = df.apply(lambda row: get_distance(img_color_des, row[5]), axis=1)
     df['vgg_feats'] = df.apply(lambda row: get_distance(img_vgg, row[6]), axis=1)
+
+    # df = df.astype({'name': 'category', 'location': 'category'}).dtypes
 
     min_max_scaler = preprocessing.MinMaxScaler()
     color_array = df['color_feats'].values.astype(float).reshape(-1,1)
@@ -285,19 +321,40 @@ def show_map(df):
     names = [df.loc[0,'name'], df.loc[1,'name'], df.loc[2,'name']]
     locations = [df.loc[0,'location'], df.loc[1,'location'], df.loc[2,'location']]
 
-    show_map_locations(locations, names)
+    display_data = pd.DataFrame({
+    'Attraction' : names,
+    'Address': locations,
+    })
+    st.table(display_data)
+
+
+    user_input = st.text_input('Enter your zip code', "")
+    if st.button('Search Locations'):
+        if user_input == '':
+            st.write('Nothing Entered')
+        else:
+            locs = get_lat_long_from_zip(user_input)
+            if locs != []:
+                st.write('Locating recommended attractions relative to ' + str(locs[0].raw['display_name']))
+                show_map_locations(locations, names, locs[1], locs[2])
+            else:
+                st.write('Did not enter valid location, or not located in contenintal Unites States')
+
+    
 
 def show_recommendations(groups, atts):
     for idx, group in enumerate(groups):
         df = pd.DataFrame(group).reset_index()
         st.write(atts[idx])
-        imgs = [df.loc[0,'url'], df.loc[2,'url'], df.loc[4,'url']]
-        st.image(imgs, width = 200)
+        imgs = [df.loc[0,'url'], df.loc[2,'url'], df.loc[5,'url']]
+        st.image(imgs, width = 200, height= 200)
 
 st.title('US Tourist Attraction Recommender')
 
+# upload jpg file
 uploaded_file = st.file_uploader("Choose an image...", type="jpg")
 if uploaded_file is not None:
+    # open img, resize, get arr, standardize, and get vgg features
     image = Image.open(uploaded_file)
     img = image.resize((150, 150)) 
     img_array = np.array(img)
@@ -313,8 +370,6 @@ if uploaded_file is not None:
 
     df = get_recommendations(label, img_array, img_vgg)
     show_map(df)
-    # closest_imgs = find_closest_imgs(label, img_array)
-    # st.write(closest_imgs)
 
 
 
