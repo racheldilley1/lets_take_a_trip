@@ -13,23 +13,6 @@ body {
 </style>
     """, unsafe_allow_html=True)
 
-# sidebar formatting
-# st.markdown("""
-# <style>
-# sidebar .sidebar-content {
-#     background-color: #CDDFE9	 !important;
-# }
-# </style>
-#     """, unsafe_allow_html=True)
-
-# @st.cache
-### This function reads a csv file which contains a list of concentrations by latitude and longitude
-# def load_data():
-# 	#load df with color and vgg descriptions
-#     file_name = label.replace('/', '_')
-#     path = '/Users/racheldilley/Documents/lets-take-a-trip-data/AppData/' + file_name + '_df.pkl'
-#     df = pickle.load(open(path, 'rb'))
-# 	return df
 
 #location data and intialize geocoder
 from geopy.geocoders import Nominatim
