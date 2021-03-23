@@ -7,8 +7,7 @@ import pickle
 from geopy.geocoders import Nominatim
 geocoder = Nominatim(user_agent = 'your_app_name')
 from geopy.extra.rate_limiter import RateLimiter
-geocode = RateLimiter(geocoder.geocode, min_delay_seconds = 1,   return_value_on_exception = None) 
-# adding 1 second padding between calls
+geocode = RateLimiter(geocoder.geocode, min_delay_seconds = 1,   return_value_on_exception = None) # adding 1 second padding between calls
 import requests
 import urllib.parse
 
@@ -19,10 +18,10 @@ from ImageFunctions import load_image_streamlit
 # models
 from keras.models import load_model, Model
 from keras.applications import vgg16
-import keras
 
 #load cnn model
-model = load_model('../Models/vgg_cnn.h5')
+from tensorflow import keras
+model = keras.models.load_model('../Models/vgg_cnn.h5')
 
 # color distributions
 from ImageFunctions import get_color_description, histogram
@@ -47,7 +46,7 @@ vgg_model.trainable = False
 for layer in vgg_model.layers:
     layer.trainable = False
 
-]
+
 def check_if_in_us(lat,long):
     '''
     check if latitude and longitude in US, return False if not
