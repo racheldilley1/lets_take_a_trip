@@ -3,6 +3,16 @@ import pandas as pd
 import numpy as np
 import pickle
 
+# formatting
+st.markdown("""
+<style>
+body {
+    color: #35586C	;
+    background-color: #CDEEEE;
+}
+</style>
+    """, unsafe_allow_html=True)
+
 #location data and intialize geocoder
 from geopy.geocoders import Nominatim
 geocoder = Nominatim(user_agent = 'your_app_name')
@@ -21,13 +31,13 @@ from keras.applications import vgg16
 
 #load cnn model
 from tensorflow import keras
-model = keras.models.load_model('../Models/vgg_cnn.h5')
+model = keras.models.load_model('../Models/vgg_cnn2')
 
 # color distributions
 from ImageFunctions import get_color_description, histogram
 import cv2
 # import imutils
-# import sklearn.preprocessing as preprocessing
+import sklearn.preprocessing as preprocessing
 
 # show map
 import pydeck as pdk
@@ -144,31 +154,21 @@ def show_map_locations(addresses, names, latitude, longitude):
     'lat' : lats,
     'lon' : longs
     })
-    st.write(data)
     
     # find midpoint of all coordinates
     longs = longs + [longitude]
     longs = np.array(longs)
     lats = lats + [latitude]
     lats = np.array(lats)
-    midpoint = (np.average(longs), np.average(lats))
+    mid_long  = np.average(longs) 
+    mid_lat = np.average(lats)
 
-    st.write(midpoint)
-
-    df = pd.DataFrame( {'lat': [latitude], 'lon': [longitude]})
-    # df = pd.DataFrame( {'lat': [midpoint[0]], 'lon': [midpoint[1]]})
-      
-    st.write(df)
+    df = pd.DataFrame( {'lat': [latitude], 'lon': [longitude]}) 
 
     # create pydeck chart centered at midpoint
     # create 2 scatterlayers, one for attraction coordinates and one for user coordinate
     st.pydeck_chart(pdk.Deck(
-                    map_style='mapbox://styles/mapbox/light-v9',
-                    initial_view_state=pdk.ViewState(
-                    latitude= midpoint[0],
-                    longitude= midpoint[1],
-                    zoom=2
-                    ),
+                    # map_style='mapbox://styles/mapbox/light-v9',
                     layers=[
                         pdk.Layer(
                         'HexagonLayer',
@@ -207,6 +207,13 @@ def show_map_locations(addresses, names, latitude, longitude):
                     # zoom=3,
                     ),
                 ],
+                map_style='mapbox://styles/mapbox/light-v9',
+                initial_view_state=pdk.ViewState(
+                    latitude= mid_lat,
+                    longitude= mid_long,
+                    zoom=3,
+                    # pitch=30
+                ),
                 ))
 
 def classify(img_vgg, model):
@@ -219,54 +226,6 @@ def classify(img_vgg, model):
     pred = np.argmax(predictions) #find max value
     
     return cats[pred] 
-
-# def histogram(image, mask, bins):
-#     # extract a 3D color histogram from the masked region of the image, using the supplied number of bins per channel
-#     hist = cv2.calcHist([image], [0,1,2], mask, [bins[0],bins[1],bins[2]],[0, 180, 0, 256, 0, 256])
-    
-#     # normalize the histogram if we are using OpenCV 2.4
-#     if imutils.is_cv2():
-#         hist = cv2.normalize(hist).flatten()
-        
-#     # otherwise handle for OpenCV 3+
-#     else:
-#         hist = cv2.normalize(hist, hist).flatten()
-
-#     return hist
-
-# def get_color_description(img_array, bins, color):
-#     img = img_array * 255
-#     image = cv2.cvtColor(img, color)
-    
-#     features = []
-   
-#     # grab the dimensions and compute the center of the image
-#     (h, w) = image.shape[:2]
-#     (cX, cY) = (int(w * 0.5), int(h * 0.5))
-
-#     # divide the image into four rectangles/segments (top-left, top-right, bottom-right, bottom-left)
-#     segments = [(0, cX, 0, cY), (cX, w, 0, cY), (cX, w, cY, h), (0, cX, cY, h)]
-
-#     # construct an elliptical mask representing the center of the image
-#     (axesX, axesY) = (int(w * 0.75) // 2, int(h * 0.75) // 2)
-#     ellipMask = np.zeros(image.shape[:2], dtype = "uint8")
-#     cv2.ellipse(ellipMask, (cX, cY), (axesX, axesY), 0, 0, 360, 255, -1)
-
-#     # loop over the segments
-#     for (startX, endX, startY, endY) in segments:
-#         # construct a mask for each corner of the image, subtracting the elliptical center from it
-#         cornerMask = np.zeros(image.shape[:2], dtype = "uint8")
-#         cv2.rectangle(cornerMask, (startX, startY), (endX, endY), 255, -1)
-#         cornerMask = cv2.subtract(cornerMask, ellipMask)
-
-#         # extract a color histogram from the image, then update the feature vector
-#         hist = histogram(image, cornerMask,bins)
-#         features.extend(hist)
-
-#         # extract a color histogram from the elliptical region and update the feature vector
-#         hist = histogram(image, ellipMask, bins)
-#         features.extend(hist)
-#     return features
 
 def get_bottleneck_features(model, input_img):
     '''
@@ -293,7 +252,6 @@ def get_recommendations(img_class, img_array, img_vgg):
     file_name = img_class.replace('/', '_')
     path = '/Users/racheldilley/Documents/lets-take-a-trip-data/AppData/' + file_name + '_df.pkl'
     df = pickle.load(open(path, 'rb'))
-    st.write(df.head())
 
     #get color distribution feature vector
     bins = [8,8,8]
@@ -301,8 +259,8 @@ def get_recommendations(img_class, img_array, img_vgg):
     img_color_des = get_color_description(img_array, bins, color)
 
     # get distances between color vectors of all imgs in class and distances between vgg vectors
-    df['color_feats'] = df.apply(lambda row: get_distance(img_color_des, row[5]), axis=1)
-    df['vgg_feats'] = df.apply(lambda row: get_distance(img_vgg, row[6]), axis=1)
+    df['color_feats'] = df.apply(lambda row: get_distance(img_color_des, row[3]), axis=1)
+    df['vgg_feats'] = df.apply(lambda row: get_distance(img_vgg, row[4]), axis=1)
 
     # df = df.astype({'name': 'category', 'location': 'category'}).dtypes
 
@@ -316,8 +274,15 @@ def get_recommendations(img_class, img_array, img_vgg):
     # drop color and vgg columns
     df.drop(['color_feats','vgg_feats'], axis=1, inplace=True)
 
-    # combine arrays, weighing vgg vector more (x3) and add new distance column
-    total_distance =  3*scaled_vgg_array + scaled_color_array
+    # combine arrays, weighing vgg vector depending on class
+    if img_class in ['gardens/zoo', 'parks']:
+        total_distance =  2*scaled_vgg_array + scaled_color_array
+    elif img_class in ['beaches/ocean', 'landmarks', 'parks']:
+        total_distance =  6*scaled_vgg_array + scaled_color_array
+    else:
+        total_distance =  10*scaled_vgg_array + scaled_color_array
+
+    # add new distance column
     df['distance'] = total_distance
 
     # groupb attractions and find mean distance
@@ -357,6 +322,7 @@ def show_map(df):
     'Attraction' : names,
     'Address': locations,
     })
+    display_data.set_index('Attraction', inplace=True)
     st.table(display_data)
 
     # get user input 
@@ -380,11 +346,42 @@ def show_recommendations(groups, atts):
     '''
     for idx, group in enumerate(groups):
         df = pd.DataFrame(group).reset_index()
-        st.write(atts[idx])
+        st.header(atts[idx])
         imgs = [df.loc[0,'url'], df.loc[2,'url'], df.loc[5,'url']]
         st.image(imgs, width = 200, height= 200)
 
-st.title('US Tourist Attraction Recommender')
+
+
+#font size
+st.markdown("""
+<style>
+.big-font {
+    font-size:17px !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+st.title('LETS TAKE A TRIP')
+st.header('A US Tourist Attraction Recommendation System')
+st.write('Upload an image to get some inspiration for your next vacation and input your zipcode to get an '
+        'idea on how far you will be traveling for your next vacation.')
+
+
+# sidebar
+st.sidebar.title("With so many vacation destinations and sights to see, planning your next vactation can be overwhelming and stressful")
+# st.sidebar.markdown("Have you ever wanted to recreate a past vacation in a different location?")
+# st.sidebar.markdown("Or maybe you've come across some images while scrolling through social media that look like a fun destination for "
+#                 "your next trip, but your not sure where it was taken")
+st.sidebar.markdown("Get some vacation planning help with this application, created using a neural network with transfer learning trained "
+                    "on over 70,000 tourist uploaded images scraped from Tripadvisor.")
+
+st.markdown("""
+<style>
+.big-font {
+    font-size:22px !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
 # upload jpg file
 uploaded_file = st.file_uploader("Choose an image...", type="jpg")
@@ -399,11 +396,16 @@ if uploaded_file is not None:
     #show uploaded img
     st.image(image, caption='Uploaded Image.', use_column_width=True)
     st.write("")
-    st.write("Recommending...")
+    st.markdown('<p class="big-font">Recommending...</p>', unsafe_allow_html=True)
+    # st.write("")
 
     #classify with cnn model
     label = classify(img_vgg, model)
-    st.write('A ' + label + ' attraction')
+    if label == 'entertainment':
+        st.markdown(f'<p class="big-font">An {label} attraction</p>', unsafe_allow_html=True)
+    else:
+        st.markdown(f'<p class="big-font">A {label} attraction</p>', unsafe_allow_html=True)
+    # st.write()
 
     #get recommedations and show map
     df = get_recommendations(label, img_array, img_vgg)
