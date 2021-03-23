@@ -4,14 +4,14 @@ import numpy as np
 import pickle
 
 # formatting
-# st.markdown("""
-# <style>
-# body {
-#     color: #35586C	;
-#     background-color: #CDEEEE;
-# }
-# </style>
-#     """, unsafe_allow_html=True)
+st.markdown("""
+<style>
+body {
+    color: #35586C	;
+    background-color: #CDEEEE;
+}
+</style>
+    """, unsafe_allow_html=True)
 
 
 #location data and intialize geocoder
@@ -349,7 +349,7 @@ def show_recommendations(groups, atts):
         df = pd.DataFrame(group).reset_index()
         st.header(atts[idx])
         imgs = [df.loc[0,'url'], df.loc[2,'url'], df.loc[5,'url']]
-        st.image(imgs, width = 200, height= 200)
+        st.image(imgs, width = 200)
 
 
 
