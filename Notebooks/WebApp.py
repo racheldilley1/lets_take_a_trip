@@ -4,15 +4,17 @@ import numpy as np
 import pickle5 as pickle
 
 # formatting
-# st.markdown("""
-# <style>
-# body {
-#     color: #35586C	;
-#     background-color: #CDEEEE;
-# }
-# </style>
-#     """, unsafe_allow_html=True)
+colors = """
+<style>
+body {
+    color: #35586C	;
+    background-color: #CDEEEE;
+}
+</style>
+    """
 
+
+st.markdown(colors, unsafe_allow_html=True)
 
 #location data and intialize geocoder
 from geopy.geocoders import Nominatim
