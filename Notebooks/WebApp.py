@@ -13,6 +13,15 @@ body {
 </style>
     """, unsafe_allow_html=True)
 
+# sidebar formatting
+# st.markdown("""
+# <style>
+# sidebar .sidebar-content {
+#     background-color: #CDDFE9	 !important;
+# }
+# </style>
+#     """, unsafe_allow_html=True)
+
 #location data and intialize geocoder
 from geopy.geocoders import Nominatim
 geocoder = Nominatim(user_agent = 'your_app_name')
@@ -275,7 +284,7 @@ def get_recommendations(img_class, img_array, img_vgg):
     df.drop(['color_feats','vgg_feats'], axis=1, inplace=True)
 
     # combine arrays, weighing vgg vector depending on class
-    if img_class in ['gardens/zoo', 'parks']:
+    if img_class in ['gardens/zoo']:
         total_distance =  2*scaled_vgg_array + scaled_color_array
     elif img_class in ['beaches/ocean', 'landmarks', 'parks']:
         total_distance =  6*scaled_vgg_array + scaled_color_array
