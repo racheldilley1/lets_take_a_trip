@@ -8,7 +8,7 @@ colors = """
 <style>
 body {
     color: #35586C	;
-    background-color: #CDEEEE;
+    background-color: #CDEEEE ;
 }
 </style>
     """
@@ -26,7 +26,7 @@ import urllib.parse
 
 # img load
 from PIL import Image
-from ImageFunctions import load_image_streamlit
+# from ImageFunctions import load_image_streamlit
 
 # models
 from keras.models import load_model, Model
@@ -37,7 +37,7 @@ from tensorflow import keras
 model = keras.models.load_model('../Models/vgg_cnn2')
 
 # color distributions
-from ImageFunctions import get_color_description, histogram
+# from ImageFunctions import get_color_description, histogram
 import cv2
 # import imutils
 import sklearn.preprocessing as preprocessing
@@ -58,6 +58,64 @@ vgg_model = Model(vgg.input, output)
 vgg_model.trainable = False
 for layer in vgg_model.layers:
     layer.trainable = False
+
+def histogram(image, mask, bins):
+    # extract a 3D color histogram from the masked region of the image, using the supplied number of bins per channel
+    hist = cv2.calcHist([image], [0,1,2], mask, [bins[0],bins[1],bins[2]],[0, 180, 0, 256, 0, 256])
+    
+    # normalize the histogram if we are using OpenCV 2.4
+    if imutils.is_cv2():
+        hist = cv2.normalize(hist).flatten()
+        
+    # otherwise handle for OpenCV 3+
+    else:
+        hist = cv2.normalize(hist, hist).flatten()
+
+    return hist
+
+def get_color_description(img_array, bins):
+    color = cv2.COLOR_BGR2HSV
+    img = img_array * 255
+    image = cv2.cvtColor(img, color)
+    
+    features = []
+   
+    # grab the dimensions and compute the center of the image
+    (h, w) = image.shape[:2]
+    (cX, cY) = (int(w * 0.5), int(h * 0.5))
+
+    # divide the image into four rectangles/segments (top-left, top-right, bottom-right, bottom-left)
+    segments = [(0, cX, 0, cY), (cX, w, 0, cY), (cX, w, cY, h), (0, cX, cY, h)]
+
+    # construct an elliptical mask representing the center of the image
+    (axesX, axesY) = (int(w * 0.75) // 2, int(h * 0.75) // 2)
+    ellipMask = np.zeros(image.shape[:2], dtype = "uint8")
+    cv2.ellipse(ellipMask, (cX, cY), (axesX, axesY), 0, 0, 360, 255, -1)
+
+    # loop over the segments
+    for (startX, endX, startY, endY) in segments:
+        # construct a mask for each corner of the image, subtracting the elliptical center from it
+        cornerMask = np.zeros(image.shape[:2], dtype = "uint8")
+        cv2.rectangle(cornerMask, (startX, startY), (endX, endY), 255, -1)
+        cornerMask = cv2.subtract(cornerMask, ellipMask)
+
+        # extract a color histogram from the image, then update the feature vector
+        hist = histogram(image, cornerMask,bins)
+        features.extend(hist)
+
+        # extract a color histogram from the elliptical region and update the feature vector
+        hist = histogram(image, ellipMask, bins)
+        features.extend(hist)
+    return features
+
+def load_image_streamlit(url):
+    ua = UserAgent()
+    headers = {'user-agent': ua.random}
+
+    response = requests.get(url, headers = headers)
+    image_io = BytesIO(response.content)
+    img = Image.open(image_io)    
+    return img
 
 
 def check_if_in_us(lat,long):
