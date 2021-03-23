@@ -34,7 +34,10 @@ from keras.applications import vgg16
 
 #load cnn model
 from tensorflow import keras
-model = keras.models.load_model('/Users/racheldilley/Documents/Metis/git_repos/lets_take_a_trip/Models/vgg_cnn.h5')
+import os
+# model = keras.models.load_model('../Models/vgg_cnn.h5')
+export_path = os.path.join(os.getcwd(),  'vgg_cnn2')
+model = load_model(export_path)
 
 # color distributions
 # from ImageFunctions import get_color_description, histogram
