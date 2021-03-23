@@ -274,8 +274,7 @@ def get_recommendations(img_class, img_array, img_vgg):
 
     #get color distribution feature vector
     bins = [8,8,8]
-    color = cv2.COLOR_BGR2HSV
-    img_color_des = get_color_description(img_array, bins, color)
+    img_color_des = get_color_description(img_array, bins)
 
     # get distances between color vectors of all imgs in class and distances between vgg vectors
     df['color_feats'] = df.apply(lambda row: get_distance(img_color_des, row[3]), axis=1)

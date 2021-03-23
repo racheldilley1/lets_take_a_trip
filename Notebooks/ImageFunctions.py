@@ -35,7 +35,8 @@ def histogram(image, mask, bins):
 
     return hist
 
-def get_color_description(img_array, bins, color):
+def get_color_description(img_array, bins):
+    color = cv2.COLOR_BGR2HSV
     img = img_array * 255
     image = cv2.cvtColor(img, color)
     
