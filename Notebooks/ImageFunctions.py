@@ -16,6 +16,11 @@ from fake_useragent import UserAgent
 from io import BytesIO
 from PIL import Image
 
+def get_bottleneck_features(model, input_imgs):
+    
+    features = model.predict(input_imgs, verbose=0)
+    return features
+
 def histogram(image, mask, bins):
     # extract a 3D color histogram from the masked region of the image, using the supplied number of bins per channel
     hist = cv2.calcHist([image], [0,1,2], mask, [bins[0],bins[1],bins[2]],[0, 180, 0, 256, 0, 256])
