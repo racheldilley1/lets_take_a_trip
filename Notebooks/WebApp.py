@@ -4,14 +4,14 @@ import numpy as np
 import pickle
 
 # formatting
-st.markdown("""
-<style>
-body {
-    color: #35586C	;
-    background-color: #CDEEEE;
-}
-</style>
-    """, unsafe_allow_html=True)
+# st.markdown("""
+# <style>
+# body {
+#     color: #35586C	;
+#     background-color: #CDEEEE;
+# }
+# </style>
+#     """, unsafe_allow_html=True)
 
 
 #location data and intialize geocoder
