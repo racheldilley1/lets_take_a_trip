@@ -10,5 +10,5 @@ matplotlib
 fake_useragent
 geopy
 imutils
-
+cv2
 scikit_learn
