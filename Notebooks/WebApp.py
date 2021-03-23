@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import pickle
+import pickle5 as pickle
 
 # formatting
 st.markdown("""
@@ -354,13 +354,13 @@ def show_recommendations(groups, atts):
 
 
 #font size
-st.markdown("""
-<style>
-.big-font {
-    font-size:17px !important;
-}
-</style>
-""", unsafe_allow_html=True)
+# st.markdown("""
+# <style>
+# .big-font {
+#     font-size:17px !important;
+# }
+# </style>
+# """, unsafe_allow_html=True)
 
 st.title('LETS TAKE A TRIP')
 st.header('A US Tourist Attraction Recommendation System')
