@@ -12,4 +12,4 @@ tensorflow==2.4.1
 requests==2.25.1
 Pillow==8.1.2
 scikit_learn==0.24.1
-opencv-python==4.5.1.48
+opencv-python==4.2.0.34
