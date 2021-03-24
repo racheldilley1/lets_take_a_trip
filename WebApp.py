@@ -1,20 +1,10 @@
 import streamlit as st
+from streamlit import caching
+
 import pandas as pd
 import numpy as np
 import pickle5 as pickle
-
-# # formatting
-# colors = """
-# <style>
-# body {
-#     color: #35586C	;
-#     background-color: #CDEEEE ;
-# }
-# </style>
-#     """
-st.markdown('<style>body{background-color: Blue;}</style>',unsafe_allow_html=True)
-
-# st.markdown(colors, unsafe_allow_html=True)
+import urllib.request
 
 #location data and intialize geocoder
 from geopy.geocoders import Nominatim
@@ -315,8 +305,11 @@ def get_recommendations(img_class, img_array, img_vgg):
     # df = load_data()
     # load df with color and vgg descriptions
     file_name = img_class.replace('/', '_')
-    path = '/Users/racheldilley/Documents/lets-take-a-trip-data/AppData/' + file_name + '_df.pkl'
-    df = pickle.load(open(path, 'rb'))
+    aws_path = 'https://streamlitwebapp2.s3.us-east-2.amazonaws.com/' + file_name +'_df.pkl'
+    local_path = '/Users/racheldilley/Documents/lets-take-a-trip-data/AppData/' + file_name + '_df.pkl'
+    requests = urllib.request.urlopen(aws_path)
+    df = pickle.load(requests)
+    # df = pickle.load(open(path, 'rb'))
 
     #get color distribution feature vector
     bins = [8,8,8]
@@ -342,7 +335,7 @@ def get_recommendations(img_class, img_array, img_vgg):
     if img_class in ['gardens/zoo']:
         total_distance =  2*scaled_vgg_array + scaled_color_array
     elif img_class in ['beaches/ocean', 'landmarks', 'parks']:
-        total_distance =  6*scaled_vgg_array + scaled_color_array
+        total_distance =  20*scaled_vgg_array + scaled_color_array
     else:
         total_distance =  10*scaled_vgg_array + scaled_color_array
 
@@ -415,9 +408,6 @@ def show_recommendations(groups, atts):
         st.image(imgs, width = 200)
 
 
-
-
-
 st.title('LETS TAKE A TRIP')
 st.header('A US Tourist Attraction Recommendation System')
 st.write('Upload an image to get some inspiration for your next vacation and input your zipcode to get an '
@@ -440,13 +430,6 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
-# st.markdown("""
-# <style>
-# .big-font {
-#     font-size:22px !important;
-# }
-# </style>
-# """, unsafe_allow_html=True)
 
 # upload jpg file
 uploaded_file = st.file_uploader("Choose an image...", type="jpg")
@@ -461,7 +444,7 @@ if uploaded_file is not None:
     #show uploaded img
     st.image(image, caption='Uploaded Image.', use_column_width=True)
     st.write("")
-    st.markdown('<p class="big-font">Recommending...</p>', unsafe_allow_html=True)
+    st.markdown('<p class="big-font">Recommending... theis could take a minute</p>', unsafe_allow_html=True)
     # st.write("")
 
     #classify with cnn model
