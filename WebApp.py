@@ -3,7 +3,8 @@ from streamlit import caching
 
 import pandas as pd
 import numpy as np
-import pickle5 as pickle
+# import pickle5 as pickle
+import pickle
 import urllib.request
 
 #location data and intialize geocoder
@@ -309,7 +310,7 @@ def get_recommendations(img_class, img_array, img_vgg):
     local_path = '/Users/racheldilley/Documents/lets-take-a-trip-data/AppData/' + file_name + '_df.pkl'
     requests = urllib.request.urlopen(aws_path)
     df = pickle.load(requests)
-    # df = pickle.load(open(path, 'rb'))
+    # df = pickle.load(open(local_path, 'rb'))
 
     #get color distribution feature vector
     bins = [8,8,8]
