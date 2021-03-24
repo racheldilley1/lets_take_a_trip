@@ -1,2 +1,2 @@
-geopy-dev
+python-geopy
 pickle5-dev
