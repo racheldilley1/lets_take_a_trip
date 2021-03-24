@@ -8,6 +8,7 @@ import pickle
 import urllib.request
 
 #location data and intialize geocoder
+import geopy
 from geopy.geocoders import Nominatim
 geocoder = Nominatim(user_agent = 'your_app_name')
 from geopy.extra.rate_limiter import RateLimiter
