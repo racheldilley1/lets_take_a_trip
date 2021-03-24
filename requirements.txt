@@ -1,8 +1,7 @@
 opencv-python-headless
 numpy
-pickle5
-pickle
 geopy
+pickle
 keras
 tensorflow
 imutills
