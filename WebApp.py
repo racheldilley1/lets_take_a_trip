@@ -3,18 +3,18 @@ import pandas as pd
 import numpy as np
 import pickle5 as pickle
 
-# formatting
-colors = """
-<style>
-body {
-    color: #35586C	;
-    background-color: #CDEEEE ;
-}
-</style>
-    """
+# # formatting
+# colors = """
+# <style>
+# body {
+#     color: #35586C	;
+#     background-color: #CDEEEE ;
+# }
+# </style>
+#     """
+st.markdown('<style>body{background-color: Blue;}</style>',unsafe_allow_html=True)
 
-
-st.markdown(colors, unsafe_allow_html=True)
+# st.markdown(colors, unsafe_allow_html=True)
 
 #location data and intialize geocoder
 from geopy.geocoders import Nominatim
@@ -42,7 +42,7 @@ model = load_model(export_path)
 # color distributions
 # from ImageFunctions import get_color_description, histogram
 import cv2
-# import imutils
+import imutils
 import sklearn.preprocessing as preprocessing
 
 # show map
@@ -416,14 +416,7 @@ def show_recommendations(groups, atts):
 
 
 
-#font size
-# st.markdown("""
-# <style>
-# .big-font {
-#     font-size:17px !important;
-# }
-# </style>
-# """, unsafe_allow_html=True)
+
 
 st.title('LETS TAKE A TRIP')
 st.header('A US Tourist Attraction Recommendation System')
@@ -439,6 +432,14 @@ st.sidebar.title("With so many vacation destinations and sights to see, planning
 st.sidebar.markdown("Get some vacation planning help with this application, created using a neural network with transfer learning trained "
                     "on over 70,000 tourist uploaded images scraped from Tripadvisor.")
 
+#font size
+st.markdown("""
+<style>
+.big-font {
+    font-size:17px !important;
+}
+</style>
+""", unsafe_allow_html=True)
 # st.markdown("""
 # <style>
 # .big-font {
