@@ -1,6 +1,6 @@
 opencv-python-headless
 numpy
-geopy==2.1.0
+geopy
 pickle5
 keras
 tensorflow
