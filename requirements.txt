@@ -1,3 +1,4 @@
 opencv-python-headless
 numpy
 pickle5
+geopy
