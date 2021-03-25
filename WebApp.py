@@ -28,7 +28,7 @@ from keras.applications import vgg16
 from tensorflow import keras
 import os
 # model = keras.models.load_model('../Models/vgg_cnn.h5')
-export_path = os.path.join(os.getcwd(), 'vgg_cnn')
+export_path = os.path.join(os.getcwd(), 'vgg_cnn.h5')
 model = load_model(export_path)
 
 # color distributions

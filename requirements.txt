@@ -1,4 +1,5 @@
 opencv-python-headless
+cudatoolkit
 geopy
 imutils
 pickle5
