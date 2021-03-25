@@ -33,5 +33,5 @@ Images in the class were aggregated, by attraction name, and the mean distance b
 
 ### Data:
 
-Over 75,00 images scraped from TripAdvisor(https://www.tripadvisor.com/) using Selenium and Beautifulsoup. The top 30 attractions from each state in the contental United States were included in the dataset (about 1,500 different attractions).  
+Over 75,00 images scraped from TripAdvisor (https://www.tripadvisor.com/) using Selenium and Beautifulsoup. The top 30 attractions from each state in the contental United States were included in the dataset (about 1,500 different attractions).  
 
