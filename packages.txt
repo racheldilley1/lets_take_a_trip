@@ -1,2 +1,4 @@
 python-geopy
-cuda-cudart
+cudatoolkit
+cudnn
+tensorflow-gpu
