@@ -1,7 +1,5 @@
 opencv-python-headless
 pandas
 numpy
-pickle5
 keras
 tensorflow
-imutills
