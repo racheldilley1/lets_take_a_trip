@@ -7,4 +7,4 @@ pandas
 sklearn
 numpy
 keras
-tensorflow
+tensorflow==2.4.1
