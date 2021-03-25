@@ -3,8 +3,8 @@ from streamlit import caching
 
 import pandas as pd
 import numpy as np
-# import pickle5 as pickle
-import pickle
+import pickle5 as pickle
+# import pickle
 import urllib.request
 
 #location data and intialize geocoder

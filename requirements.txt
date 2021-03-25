@@ -1,6 +1,7 @@
 opencv-python-headless
 geopy
 imutils
+pickle5
 pandas
 sklearn
 numpy
