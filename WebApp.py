@@ -54,6 +54,16 @@ vgg_model.trainable = False
 for layer in vgg_model.layers:
     layer.trainable = False
 
+@st.cache
+def load_data(img_class):
+    file_name = img_class.replace('/', '_')
+    aws_path = 'https://streamlitwebapp2.s3.us-east-2.amazonaws.com/' + file_name +'_df.pkl'
+    local_path = '/Users/racheldilley/Documents/lets-take-a-trip-data/AppData/' + file_name + '_df.pkl'
+    requests = urllib.request.urlopen(aws_path)
+    df = pickle.load(requests)
+    # df = pickle.load(open(local_path, 'rb'))
+    return df
+
 def histogram(image, mask, bins):
     # extract a 3D color histogram from the masked region of the image, using the supplied number of bins per channel
     hist = cv2.calcHist([image], [0,1,2], mask, [bins[0],bins[1],bins[2]],[0, 180, 0, 256, 0, 256])
@@ -306,12 +316,8 @@ def get_recommendations(img_class, img_array, img_vgg):
     '''
     # df = load_data()
     # load df with color and vgg descriptions
-    file_name = img_class.replace('/', '_')
-    aws_path = 'https://streamlitwebapp2.s3.us-east-2.amazonaws.com/' + file_name +'_df.pkl'
-    local_path = '/Users/racheldilley/Documents/lets-take-a-trip-data/AppData/' + file_name + '_df.pkl'
-    requests = urllib.request.urlopen(aws_path)
-    df = pickle.load(requests)
-    # df = pickle.load(open(local_path, 'rb'))
+    data = load_data(img_class)
+    df = data.copy()
 
     #get color distribution feature vector
     bins = [8,8,8]
