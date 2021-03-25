@@ -2,7 +2,7 @@ opencv-python-headless
 cudatoolkit
 geopy
 imutils
-pickle5
+pickle
 pandas
 sklearn
 numpy

@@ -1,4 +1,4 @@
 python-geopy
-cudatoolkit-dev
-cudnn-dev
-tensorflow-gpu-dev
+python-cudatoolkit
+python-cudnn
+python-tensorflow-gpu
