@@ -1,11 +1,13 @@
 opencv-python-headless
 numpy
-geopy==2.1.0
+geopy==1.2.0
 pickle5==0.0.11
 pickle
 keras
 tensorflow
 imutills
+
+
 imutils==0.5.4
 matplotlib==3.2.2
 pydeck==0.5.0
