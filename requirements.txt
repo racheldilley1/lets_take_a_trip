@@ -1,5 +1,6 @@
 opencv-python-headless
 geopy
+imutils
 pandas
 numpy
 keras
