@@ -1,2 +1,3 @@
 python-geopy
+cudatoolkit
 imutils
