@@ -1,2 +1,2 @@
 python-geopy
-python-imutills
+imutills
