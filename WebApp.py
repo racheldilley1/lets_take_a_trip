@@ -28,7 +28,7 @@ from keras.applications import vgg16
 from tensorflow import keras
 import os
 # model = keras.models.load_model('../Models/vgg_cnn.h5')
-export_path = os.path.join(os.getcwd(), 'vgg_cnn2')
+export_path = os.path.join(os.getcwd(), 'vgg_cnn')
 model = load_model(export_path)
 
 # color distributions
@@ -446,7 +446,7 @@ if uploaded_file is not None:
     #show uploaded img
     st.image(image, caption='Uploaded Image.', use_column_width=True)
     st.write("")
-    st.markdown('<p class="big-font">Recommending... theis could take a minute</p>', unsafe_allow_html=True)
+    st.markdown('<p class="big-font">Recommending... this could take a minute</p>', unsafe_allow_html=True)
     # st.write("")
 
     #classify with cnn model
