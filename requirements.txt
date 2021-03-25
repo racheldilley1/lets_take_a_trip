@@ -1,7 +1,6 @@
 opencv-python-headless
 pandas
 numpy
-geopy
 pickle5
 keras
 tensorflow
