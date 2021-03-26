@@ -28,7 +28,7 @@ from keras.applications import vgg16
 from tensorflow import keras
 import os
 # model = keras.models.load_model('../Models/vgg_cnn.h5')
-export_path = os.path.join(os.getcwd(), 'vgg_cnn.h5')
+export_path = os.path.join(os.getcwd(), 'vgg_cnn_final.h5')
 model = load_model(export_path)
 
 # color distributions
@@ -54,7 +54,7 @@ vgg_model.trainable = False
 for layer in vgg_model.layers:
     layer.trainable = False
 
-@st.cache
+# @st.cache
 def load_data(img_class):
     file_name = img_class.replace('/', '_')
     aws_path = 'https://streamlitwebapp2.s3.us-east-2.amazonaws.com/' + file_name +'_df.pkl'
@@ -316,8 +316,8 @@ def get_recommendations(img_class, img_array, img_vgg):
     '''
     # df = load_data()
     # load df with color and vgg descriptions
-    data = load_data(img_class)
-    df = data.copy()
+    df = load_data(img_class)
+    # df = data.copy()
 
     #get color distribution feature vector
     bins = [8,8,8]
