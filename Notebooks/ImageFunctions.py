@@ -17,11 +17,17 @@ from io import BytesIO
 from PIL import Image
 
 def get_bottleneck_features(model, input_imgs):
-    
+    '''
+    get vgg features for an array of images
+    '''
     features = model.predict(input_imgs, verbose=0)
     return features
 
 def histogram(image, mask, bins):
+    '''
+    get histogram of reg, green, and blue color distribution feature vectors for a section of an image (represented by a mask)
+    return 3 histograms as a single color feature vecotr
+    '''
     # extract a 3D color histogram from the masked region of the image, using the supplied number of bins per channel
     hist = cv2.calcHist([image], [0,1,2], mask, [bins[0],bins[1],bins[2]],[0, 180, 0, 256, 0, 256])
     
@@ -36,6 +42,10 @@ def histogram(image, mask, bins):
     return hist
 
 def get_color_description(img_array, bins):
+    '''
+    get color distribution feature vector for an image with specified number of bins
+    split image up into 5 sections, 4 corners and a center ellipse, getting r,g, and b distribution vectors
+    '''
     color = cv2.COLOR_BGR2HSV
     img = img_array * 255
     image = cv2.cvtColor(img, color)
@@ -71,6 +81,9 @@ def get_color_description(img_array, bins):
     return features
 
 def plot_color_hist(image, bins, mask, name):
+    '''
+    plot red, green, and blue color distribution for a section of an image
+    '''
 
     rgb    = cv2.split(image)
 
@@ -99,6 +112,9 @@ def show_image(img):
     plt.show()
     
 def load_image(url):
+    '''
+    load an image from url, return image array
+    '''
     ua = UserAgent()
     headers = {'user-agent': ua.random}
 
@@ -106,17 +122,11 @@ def load_image(url):
     image_io = BytesIO(response.content)
     img = Image.open(image_io)    
     return np.array(img)
-
-def load_image_streamlit(url):
-    ua = UserAgent()
-    headers = {'user-agent': ua.random}
-
-    response = requests.get(url, headers = headers)
-    image_io = BytesIO(response.content)
-    img = Image.open(image_io)    
-    return img
     
 def show_save_image(img, name):
+    '''
+    show and save image for presentation
+    '''
     # show
     plt.rcParams['figure.figsize']=(4,4)
     imgplot = plt.imshow(img)
@@ -129,6 +139,9 @@ def show_save_image(img, name):
     image.imsave(path, img)
     
 def show_images(img_list, category):
+    '''
+    show multiple images
+    '''
     plt.figure(figsize = (25,15));
     t = f"Showing from {category} category"
     
@@ -139,6 +152,9 @@ def show_images(img_list, category):
         plt.axis('off')
 
 def get_categories_top_bottom_imgs(df, categories, num):
+    '''
+    find centroid of df, based on color features and return closest and furthest images from centroid
+    '''
     grouped = df.groupby('category')
     group_centroid = df.groupby("category")["color_feats"].apply(lambda x: np.array(x.tolist()).mean(axis=0))
 
@@ -159,6 +175,9 @@ def get_categories_top_bottom_imgs(df, categories, num):
     return (firstvals, lastvals)
 
 def get_sorted_distances_list(df, feat):
+    '''
+    get distances and return sroted dictionary with indexes as keys and distances as values
+    '''
     distances = {}
     for index, row in df.iterrows():
         pt = np.array(row[4])
@@ -171,6 +190,9 @@ def get_sorted_distances_list(df, feat):
     return sorted_dist
 
 def remove_bottom_imgs(X, df, categories, bottom_imgs_dict, remove):
+    '''
+    remove furthest imgages from the centroid
+    '''
     remove_indexes = remove
     for cat in categories:
         remove_indexes = remove_indexes + bottom_imgs_dict[cat]
