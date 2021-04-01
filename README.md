@@ -2,7 +2,7 @@
 
 -----------------
 
-A US Attraction Recommender. For a more detailed description please read my [blog post](https://racheldilley.medium.com/us-tourist-attraction-recommender-b3753b40492a) on Medium. Watch a demo of my WebApp [here](https://youtu.be/8c6hOS2yMkw).
+A US Attraction Recommender. For a more detailed description please read my [blog post](https://racheldilley.medium.com/us-tourist-attraction-recommender-b3753b40492a) on Medium. Watch a demo of my WebApp [here](https://youtu.be/8c6hOS2yMkw) created using Streamlit.
 
 -----------------
 
@@ -33,6 +33,7 @@ Images in the class were aggregated, by attraction name, and the mean distance b
 * Transfer Learning with VGG-16
 * Neural Network
 * Cosine Distance
+* Streamlit
 
 -----------------
 
