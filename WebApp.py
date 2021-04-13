@@ -18,7 +18,6 @@ import urllib.parse
 
 # img load
 from PIL import Image
-# from ImageFunctions import load_image_streamlit
 
 # models
 from keras.models import load_model, Model
@@ -32,7 +31,6 @@ export_path = os.path.join(os.getcwd(), 'vgg_cnn_final.h5')
 model = load_model(export_path)
 
 # color distributions
-# from ImageFunctions import get_color_description, histogram
 import cv2
 import imutils
 import sklearn.preprocessing as preprocessing
