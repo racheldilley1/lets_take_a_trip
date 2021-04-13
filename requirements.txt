@@ -1,5 +1,5 @@
 opencv-python-headless
-geopy==2.1.0
+geopy
 imutils
 pickle
 pandas
