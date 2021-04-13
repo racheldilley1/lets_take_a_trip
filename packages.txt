@@ -1,4 +1,0 @@
-python-geopy
-python-cudatoolkit
-python-cudnn
-python-tensorflow-gpu

@@ -76,6 +76,7 @@ def histogram(image, mask, bins):
 
     return hist
 
+@st.cache(suppress_st_warning=True)
 def get_color_description(img_array, bins):
     color = cv2.COLOR_BGR2HSV
     img = img_array * 255
@@ -300,6 +301,7 @@ def get_bottleneck_features(model, input_img):
     features = model.predict(input_imgs, verbose=0)
     return features
 
+@st.cache(suppress_st_warning=True)
 def get_distance(img_feats, feats):
     '''
     get distance between vectors
