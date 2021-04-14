@@ -467,19 +467,19 @@ if uploaded_file is not None:
     #show uploaded img
     st.image(image, caption='Uploaded Image.', use_column_width=True)
     st.write("")
-    st.markdown('<p class="big-font">Recommending... this could take a few minutes</p>', unsafe_allow_html=True)
     # st.write("")
 
     start_execution = st.button('Run model')
     if start_execution:
         gif_runner = st.image('car.gif')
+        st.markdown('<p class="big-font">Calculating... this could take a few minutes</p>', unsafe_allow_html=True)
 
         #classify with cnn model
         label = classify(img_vgg, model)
         if label == 'entertainment':
-            st.markdown(f'<p class="big-font">An {label} attraction</p>', unsafe_allow_html=True)
+            st.markdown(f'<p class="big-font">Recommeding an {label} attraction</p>', unsafe_allow_html=True)
         else:
-            st.markdown(f'<p class="big-font">A {label} attraction</p>', unsafe_allow_html=True)
+            st.markdown(f'<p class="big-font">Recommeding a {label} attraction</p>', unsafe_allow_html=True)
         # st.write()
 
         #get recommedations and show map
