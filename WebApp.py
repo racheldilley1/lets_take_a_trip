@@ -43,7 +43,7 @@ html_temp = """
 <div style="background-color:tomato;padding:10px">
 <h1 style="color:white;text-align:center;">Car Price Prediction </h1>
 </div>"""
-st.markdown(html_temp,unsafe_allow_html=True)
+st.markdown("<span style=“background-color:#121922”>",unsafe_allow_html=True)
 
 
 # create vgg model with correct input size
