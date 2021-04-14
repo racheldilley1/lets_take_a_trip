@@ -216,7 +216,7 @@ def show_map_locations(addresses, names, latitude, longitude):
             name_list.append(names[idx])
             locations.append(add)
         else:
-            st.write('Coudnt find geolocation for ' + names[idx])
+            st.write("Coudn't find geolocation for " + names[idx])
 
     
     data = pd.DataFrame({
@@ -314,18 +314,14 @@ def get_distance(img_feats, feats):
     '''
     get distance between vectors
     '''
-    img_feats_arr = np.array(img_feats)
-    pt = np.array(feats)
     return scipy.spatial.distance.cosine(img_feats, feats)
 
 def get_recommendations(img_class, img_array, img_vgg):
     '''
     get df of top attractions and siplay 3 images from top attractions
     '''
-    # df = load_data()
     # load df with color and vgg descriptions
     df = load_data(img_class)
-    # df = data.copy()
 
     #get color distribution feature vector
     bins = [8,8,8]
@@ -428,7 +424,7 @@ def show_recommendations(groups, atts):
         st.image(imgs, width = 200)
 
 
-st.title('LETS TAKE A TRIPPPP')
+st.title('LETS TAKE A TRIP')
 st.header('A US Tourist Attraction Recommendation System')
 st.write('Upload an image to get some inspiration for your next vacation and input your zipcode to get an '
         'idea on how far you will be traveling for your next vacation.')
@@ -464,7 +460,7 @@ if uploaded_file is not None:
     #show uploaded img
     st.image(image, caption='Uploaded Image.', use_column_width=True)
     st.write("")
-    st.markdown('<p class="big-font">Recommending... this could take a minute</p>', unsafe_allow_html=True)
+    st.markdown('<p class="big-font">Recommending... this could take a few minutes</p>', unsafe_allow_html=True)
     # st.write("")
 
     #classify with cnn model
