@@ -485,7 +485,7 @@ if uploaded_file is not None:
         #get recommedations and show map
         df = get_recommendations(label, img_array, img_vgg)
         gif_runner.empty()
-    show_map(df)
+        show_map(df)
 
 
 
