@@ -55,7 +55,8 @@ for layer in vgg_model.layers:
 # @st.cache
 def load_data(img_class):
     file_name = img_class.replace('/', '_')
-    aws_path = 'https://streamlit3.s3.us-west-2.amazonaws.com/' + file_name +'_df.pkl'
+    #arn:aws:s3:::streamlit3
+    aws_path = 'https://streamlit3.s3-us-west-2.amazonaws.com/' + file_name +'_df.pkl'
     local_path = '/Users/racheldilley/Documents/lets-take-a-trip-data/AppData/' + file_name + '_df.pkl'
     requests = urllib.request.urlopen(aws_path)
     df = pickle.load(requests)
