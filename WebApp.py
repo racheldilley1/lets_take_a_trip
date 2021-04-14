@@ -39,6 +39,13 @@ import scipy.spatial.distance
 # show map
 import pydeck as pdk
 
+html_temp = """
+<div style="background-color:tomato;padding:10px">
+<h1 style="color:white;text-align:center;">Car Price Prediction </h1>
+</div>"""
+st.markdown(html_temp,unsafe_allow_html=True)
+
+
 # create vgg model with correct input size
 inputs = (150, 150, 3)
 vgg = vgg16.VGG16(include_top=False, weights='imagenet', 
