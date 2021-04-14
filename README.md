@@ -33,6 +33,7 @@ Images in the class were aggregated, by attraction name, and the mean distance b
 * Transfer Learning with VGG-16
 * Neural Network
 * Google Cloud Platform and Colab
+* OpenCV for Color Descriptions
 * Cosine Distance
 * Streamlit
 * Geopy
