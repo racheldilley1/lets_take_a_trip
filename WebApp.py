@@ -427,7 +427,7 @@ def show_recommendations(groups, atts):
         st.image(imgs, width = 200)
 
 
-st.title('LETS TAKE A TRIP')
+st.title('LETS TAKE A TRIPPPP')
 st.header('A US Tourist Attraction Recommendation System')
 st.write('Upload an image to get some inspiration for your next vacation and input your zipcode to get an '
         'idea on how far you will be traveling for your next vacation.')
