@@ -34,6 +34,7 @@ model = load_model(export_path)
 import cv2
 import imutils
 import sklearn.preprocessing as preprocessing
+import scipy.spatial.distance
 
 # show map
 import pydeck as pdk
