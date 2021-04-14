@@ -2,7 +2,7 @@
 
 -----------------
 
-A US Attraction Recommender created using machine learning. For a more detailed description please read my [blog post](https://racheldilley.medium.com/us-tourist-attraction-recommender-b3753b40492a) on Medium. Watch a demo of my WebApp [here](https://youtu.be/8c6hOS2yMkw) created using Streamlit.
+A US Attraction Recommender created using machine learning. For a more detailed description please read my [blog post](https://racheldilley.medium.com/us-tourist-attraction-recommender-b3753b40492a) on Medium. Play around with the [Streamlit web app](http://34.218.49.72:8501/) that I created and deployed using an Amazon ec2 instance. Watch a demo of my WebApp [here](https://youtu.be/8c6hOS2yMkw).
 
 -----------------
 
