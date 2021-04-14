@@ -314,7 +314,7 @@ def get_distance(img_feats, feats):
     '''
     img_feats_arr = np.array(img_feats)
     pt = np.array(feats)
-    return np.linalg.norm(img_feats_arr-pt)
+    return scipy.spatial.distance.cosine(img_feats, feats)
 
 def get_recommendations(img_class, img_array, img_vgg):
     '''
@@ -324,7 +324,6 @@ def get_recommendations(img_class, img_array, img_vgg):
     # load df with color and vgg descriptions
     df = load_data(img_class)
     # df = data.copy()
-    st.write('data loaded')
 
     #get color distribution feature vector
     bins = [8,8,8]
@@ -332,9 +331,9 @@ def get_recommendations(img_class, img_array, img_vgg):
 
     # get distances between color vectors of all imgs in class and distances between vgg vectors
     df['color_feats'] = df.apply(lambda row: get_distance(img_color_des, row[3]), axis=1)
-    st.write('color distances')
+    
     df['vgg_feats'] = df.apply(lambda row: get_distance(img_vgg, row[4]), axis=1)
-    st.write('vgg distances')
+    
 
     # df = df.astype({'name': 'category', 'location': 'category'}).dtypes
 
@@ -349,12 +348,14 @@ def get_recommendations(img_class, img_array, img_vgg):
     df.drop(['color_feats','vgg_feats'], axis=1, inplace=True)
 
     # combine arrays, weighing vgg vector depending on class
-    if img_class in ['gardens/zoo']:
-        total_distance =  2*scaled_vgg_array + scaled_color_array
-    elif img_class in ['beaches/ocean', 'landmarks', 'parks']:
+    if img_class in ['beaches/ocean']:
+        total_distance =  0.5*scaled_vgg_array + scaled_color_array
+    elif img_class in ['gardens/zoo']:
+        total_distance =  10*scaled_vgg_array + scaled_color_array
+    elif img_class in ['entertainment', 'landmarks', 'museums']:
         total_distance =  20*scaled_vgg_array + scaled_color_array
     else:
-        total_distance =  10*scaled_vgg_array + scaled_color_array
+        total_distance =  1* scaled_vgg_array + scaled_color_array
 
     # add new distance column
     df['distance'] = total_distance
