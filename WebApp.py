@@ -356,7 +356,7 @@ def get_recommendations(img_class, img_array, img_vgg):
     if img_class in ['beaches/ocean']:
         total_distance =  0.5*scaled_vgg_array + scaled_color_array
     elif img_class in ['gardens/zoo']:
-        total_distance =  10*scaled_vgg_array + scaled_color_array
+        total_distance =  5*scaled_vgg_array + scaled_color_array
     elif img_class in ['entertainment', 'landmarks', 'museums']:
         total_distance =  20*scaled_vgg_array + scaled_color_array
     else:
@@ -432,7 +432,7 @@ def show_recommendations(groups, atts):
 
 
 st.title('LETS TAKE A TRIP')
-st.header('A US Tourist Attraction Recommendation System')
+st.header('A US Tourist Attraction Recommender')
 st.write('Upload an image to get some inspiration for your next vacation and input your zipcode to get an '
         'idea on how far you will be traveling for your next vacation.')
 
