@@ -27,7 +27,7 @@ from keras.applications import vgg16
 from tensorflow import keras
 import os
 # model = keras.models.load_model('../Models/vgg_cnn.h5')
-export_path = os.path.join(os.getcwd(), 'final_vgg_cnn.h5')
+export_path = os.path.join(os.getcwd(), 'vgg_cnn2')
 model = load_model(export_path)
 
 # color distributions
@@ -470,16 +470,21 @@ if uploaded_file is not None:
     st.markdown('<p class="big-font">Recommending... this could take a few minutes</p>', unsafe_allow_html=True)
     # st.write("")
 
-    #classify with cnn model
-    label = classify(img_vgg, model)
-    if label == 'entertainment':
-        st.markdown(f'<p class="big-font">An {label} attraction</p>', unsafe_allow_html=True)
-    else:
-        st.markdown(f'<p class="big-font">A {label} attraction</p>', unsafe_allow_html=True)
-    # st.write()
+    start_execution = st.button('Run model')
+    if start_execution:
+        gif_runner = st.image('car.gif')
 
-    #get recommedations and show map
-    df = get_recommendations(label, img_array, img_vgg)
+        #classify with cnn model
+        label = classify(img_vgg, model)
+        if label == 'entertainment':
+            st.markdown(f'<p class="big-font">An {label} attraction</p>', unsafe_allow_html=True)
+        else:
+            st.markdown(f'<p class="big-font">A {label} attraction</p>', unsafe_allow_html=True)
+        # st.write()
+
+        #get recommedations and show map
+        df = get_recommendations(label, img_array, img_vgg)
+        gif_runner.empty()
     show_map(df)
 
 
