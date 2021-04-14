@@ -62,6 +62,7 @@ def load_data(img_class):
     # df = pickle.load(open(local_path, 'rb'))
     return df
 
+# @st.cache
 def histogram(image, mask, bins):
     # extract a 3D color histogram from the masked region of the image, using the supplied number of bins per channel
     hist = cv2.calcHist([image], [0,1,2], mask, [bins[0],bins[1],bins[2]],[0, 180, 0, 256, 0, 256])
@@ -76,7 +77,7 @@ def histogram(image, mask, bins):
 
     return hist
 
-@st.cache(suppress_st_warning=True)
+# @st.cache
 def get_color_description(img_array, bins):
     color = cv2.COLOR_BGR2HSV
     img = img_array * 255
@@ -112,6 +113,7 @@ def get_color_description(img_array, bins):
         features.extend(hist)
     return features
 
+# @st.cache
 def load_image_streamlit(url):
     ua = UserAgent()
     headers = {'user-agent': ua.random}
@@ -121,7 +123,7 @@ def load_image_streamlit(url):
     img = Image.open(image_io)    
     return img
 
-
+# @st.cache
 def check_if_in_us(lat,long):
     '''
     check if latitude and longitude in US, return False if not
@@ -137,6 +139,7 @@ def check_if_in_us(lat,long):
     else:
         return True
 
+# @st.cache
 def get_lat_long_from_zip(zip):
     '''
     get location object given zip code
@@ -154,6 +157,7 @@ def get_lat_long_from_zip(zip):
     except:
         return []
 
+# @st.cache
 def find_lat_long(add):
     '''
     find lat and long, return empty tuple if not found or not in US
@@ -281,6 +285,7 @@ def show_map_locations(addresses, names, latitude, longitude):
                 ),
                 ))
 
+
 def classify(img_vgg, model):
     '''
     find class using cnn model, using img vgg vector and return prediction
@@ -292,6 +297,7 @@ def classify(img_vgg, model):
     
     return cats[pred] 
 
+# @st.cache 
 def get_bottleneck_features(model, input_img):
     '''
     get vgg vector features of array of images
@@ -301,7 +307,7 @@ def get_bottleneck_features(model, input_img):
     features = model.predict(input_imgs, verbose=0)
     return features
 
-@st.cache(suppress_st_warning=True)
+# @st.cache   
 def get_distance(img_feats, feats):
     '''
     get distance between vectors
@@ -318,6 +324,7 @@ def get_recommendations(img_class, img_array, img_vgg):
     # load df with color and vgg descriptions
     df = load_data(img_class)
     # df = data.copy()
+    st.write('data loaded')
 
     #get color distribution feature vector
     bins = [8,8,8]
@@ -325,7 +332,9 @@ def get_recommendations(img_class, img_array, img_vgg):
 
     # get distances between color vectors of all imgs in class and distances between vgg vectors
     df['color_feats'] = df.apply(lambda row: get_distance(img_color_des, row[3]), axis=1)
+    st.write('color distances')
     df['vgg_feats'] = df.apply(lambda row: get_distance(img_vgg, row[4]), axis=1)
+    st.write('vgg distances')
 
     # df = df.astype({'name': 'category', 'location': 'category'}).dtypes
 
