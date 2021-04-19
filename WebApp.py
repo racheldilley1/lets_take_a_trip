@@ -62,14 +62,24 @@ for layer in vgg_model.layers:
 
 # @st.cache
 def load_data(img_class):
-    file_name = img_class.replace('/', '_')
-    #arn:aws:s3:::streamlit3
-    aws_path = 'https://streamlit3.s3-us-west-2.amazonaws.com/' + file_name +'_df.pkl'
-    local_path = '/Users/racheldilley/Documents/lets-take-a-trip-data/AppData/' + file_name + '_df.pkl'
-    requests = urllib.request.urlopen(aws_path)
-    df = pickle.load(requests)
-    # df = pickle.load(open(local_path, 'rb'))
-    return df
+    if img_class == 'parks':
+        aws_pathA = 'https://streamlit3.s3-us-west-2.amazonaws.com/parksA_df.pkl'
+        requests = urllib.request.urlopen(aws_pathA)
+        dfA = pickle.load(requests)
+        aws_pathB = 'https://streamlit3.s3-us-west-2.amazonaws.com/parksB_df.pkl'
+        requests = urllib.request.urlopen(aws_pathB)
+        dfB = pickle.load(requests)
+        del dfA, dfB
+        return pd.concat([dfA, dfB])
+    else:
+        file_name = img_class.replace('/', '_')
+        #arn:aws:s3:::streamlit3
+        aws_path = 'https://streamlit3.s3-us-west-2.amazonaws.com/' + file_name +'_df.pkl'
+        local_path = '/Users/racheldilley/Documents/lets-take-a-trip-data/AppData/' + file_name + '_df.pkl'
+        requests = urllib.request.urlopen(aws_path)
+        df = pickle.load(requests)
+        # df = pickle.load(open(local_path, 'rb'))
+        return df
 
 # @st.cache
 def histogram(image, mask, bins):
@@ -380,12 +390,19 @@ def get_recommendations(img_class, img_array, img_vgg):
     top_df = grouped_df[:3].reset_index()
     atts = [top_df.loc[0,'name'], top_df.loc[1,'name'], top_df.loc[2,'name']]
 
+    del grouped_df
+
     # groupp by attraction, and get groups for top 3 attractions
     grouped = df.groupby('name')
+
+    del df
+
     groups = []
     for attraction in atts:
         groups.append(grouped.get_group(attraction))
     show_recommendations(groups, atts) #show recommendations
+
+    del grouped
 
     return top_df
 
