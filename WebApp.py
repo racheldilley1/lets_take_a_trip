@@ -425,18 +425,18 @@ def show_map(df):
 
     # get user input 
     user_input = st.text_input('Enter your zip code', "")
-    # if st.button('Search Locations'):
-    if user_input == '':
-        st.write('Nothing Entered') #display if search button pressed but nothing entered
-    else:
-        st.write('get lat and long')
-        locs = get_lat_long_from_zip(user_input) #get lat and long and display location and show map if valid input
-        if locs != []:
-            st.write('locating')
-            st.write('Locating recommended attractions relative to ' + str(locs[0].raw['display_name']))
-            show_map_locations(locations, names, locs[1], locs[2])
+    if st.button('Search Locations'):
+        if user_input == '':
+            st.write('Nothing Entered') #display if search button pressed but nothing entered
         else:
-            st.write('Did not enter valid location, or not located in contenintal Unites States')
+            st.write('get lat and long')
+            locs = get_lat_long_from_zip(user_input) #get lat and long and display location and show map if valid input
+            if locs != []:
+                st.write('locating')
+                st.write('Locating recommended attractions relative to ' + str(locs[0].raw['display_name']))
+                show_map_locations(locations, names, locs[1], locs[2])
+            else:
+                st.write('Did not enter valid location, or not located in contenintal Unites States')
 
     
 
@@ -489,23 +489,23 @@ if uploaded_file is not None:
     st.write("")
     # st.write("")
 
-    start_execution = st.button('Run model')
-    if start_execution:
+    # start_execution = st.button('Run model')
+    # if start_execution:
         # gif_runner = st.image('car.gif')
-        st.markdown('<p class="big-font">Calculating... this could take a few minutes</p>', unsafe_allow_html=True)
+    st.markdown('<p class="big-font">Calculating... this could take a few minutes</p>', unsafe_allow_html=True)
 
         #classify with cnn model
-        label = classify(img_vgg, model)
-        if label == 'entertainment':
-            st.markdown(f'<p class="big-font">Recommeding an {label} attraction</p>', unsafe_allow_html=True)
-        else:
-            st.markdown(f'<p class="big-font">Recommeding a {label} attraction</p>', unsafe_allow_html=True)
+    label = classify(img_vgg, model)
+    if label == 'entertainment':
+        st.markdown(f'<p class="big-font">Recommeding an {label} attraction</p>', unsafe_allow_html=True)
+    else:
+        st.markdown(f'<p class="big-font">Recommeding a {label} attraction</p>', unsafe_allow_html=True)
         # st.write()
 
         #get recommedations and show map
-        df = get_recommendations(label, img_array, img_vgg)
+    df = get_recommendations(label, img_array, img_vgg)
         # gif_runner.empty()
-        show_map(df)
+    show_map(df)
 
 
 
