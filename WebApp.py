@@ -224,7 +224,7 @@ def show_map_locations(addresses, names, latitude, longitude):
     lats = []
     longs = []
     name_list = []
-    st.write('finding geolocations')
+    # st.write('finding geolocations')
     for idx, add in enumerate(addresses): #loop through addresses
         #find lat and long given address, write warning if not found
         lat, long = find_lat_long(add)
@@ -429,10 +429,10 @@ def show_map(df):
         if user_input == '':
             st.write('Nothing Entered') #display if search button pressed but nothing entered
         else:
-            st.write('get lat and long')
+            # st.write('get lat and long')
             locs = get_lat_long_from_zip(user_input) #get lat and long and display location and show map if valid input
             if locs != []:
-                st.write('locating')
+                # st.write('locating')
                 st.write('Locating recommended attractions relative to ' + str(locs[0].raw['display_name']))
                 show_map_locations(locations, names, locs[1], locs[2])
             else:
@@ -491,7 +491,7 @@ if uploaded_file is not None:
 
     # start_execution = st.button('Run model')
     # if start_execution:
-        # gif_runner = st.image('car.gif')
+    gif_runner = st.image('car.gif')
     st.markdown('<p class="big-font">Calculating... this could take a few minutes</p>', unsafe_allow_html=True)
 
         #classify with cnn model
@@ -504,7 +504,7 @@ if uploaded_file is not None:
 
         #get recommedations and show map
     df = get_recommendations(label, img_array, img_vgg)
-        # gif_runner.empty()
+    gif_runner.empty()
     show_map(df)
 
 
