@@ -491,7 +491,7 @@ if uploaded_file is not None:
 
     # start_execution = st.button('Run model')
     # if start_execution:
-    gif_runner = st.image('car.gif')
+    # gif_runner = st.image('car.gif')
     st.markdown('<p class="big-font">Calculating... this could take a few minutes</p>', unsafe_allow_html=True)
 
         #classify with cnn model
@@ -504,7 +504,7 @@ if uploaded_file is not None:
 
         #get recommedations and show map
     df = get_recommendations(label, img_array, img_vgg)
-    gif_runner.empty()
+    # gif_runner.empty()
     show_map(df)
 
 
