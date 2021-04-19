@@ -69,8 +69,9 @@ def load_data(img_class):
         aws_pathB = 'https://streamlit3.s3-us-west-2.amazonaws.com/parksB_df.pkl'
         requests = urllib.request.urlopen(aws_pathB)
         dfB = pickle.load(requests)
+        df = pd.concat([dfA, dfB])
         del dfA, dfB
-        return pd.concat([dfA, dfB])
+        return df
     else:
         file_name = img_class.replace('/', '_')
         #arn:aws:s3:::streamlit3
