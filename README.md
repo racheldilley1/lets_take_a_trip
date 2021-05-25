@@ -31,7 +31,7 @@ Recommend attractions or destinations located in the contenintal United States b
 
 ### Data:
 
-Over 75,00 images scraped from [TripAdvisor](https://www.tripadvisor.com/) using Selenium and Beautifulsoup. The top 30 attractions from each state in the contental United States were included in the dataset (about 1,500 different attractions).  
+Over 75,00 images scraped from [TripAdvisor](https://www.tripadvisor.com/) using Selenium and Beautifulsoup. The top 30 attractions from each state in the continental United States were included in the dataset (about 1,500 different attractions).  
 
 -----------------
 
